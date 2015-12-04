@@ -23,7 +23,7 @@ public class User extends AuditModel<User, Integer> {
     @Column(name = "USR_PASSWORD", length = 100)
     private String password;
 
-    @Column(name = "USR_USERNAME", length = 100)
+    @Column(name = "USR_USERNAME", length = 100, unique = true)
     private String username;
 
     public User() {
@@ -55,6 +55,15 @@ public class User extends AuditModel<User, Integer> {
         this.username = username;
     }
 
+    public void login() {
+        TypedQuery<User> query = getEntityManager()
+                .createQuery("select user from User user where user.username = :username and user.password = :password", User.class);
+        query.setParameter("username", getUsername());
+        query.setParameter("password", getPassword());
+        User user = query.getSingleResult();
+        copy(user);
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -64,4 +73,5 @@ public class User extends AuditModel<User, Integer> {
                 ", Parent='" + super.toString() + '\'' +
                 '}';
     }
+
 }

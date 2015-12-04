@@ -1,57 +1,53 @@
 package com.fererlab.oo.restful;
 
 
-import com.fererlab.oo.commons.restful.AbstractResource;
-import com.fererlab.oo.commons.restful.EntityManagerAwareInterceptor;
 import com.fererlab.oo.model.User;
 
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.interceptor.Interceptors;
 import javax.ws.rs.*;
-import java.util.Random;
+import java.util.List;
 
 @Path("/user")
 @Produces({"application/json"})
 @Consumes({"application/json"})
-@LocalBean
-@Stateless(name = "UserResource", mappedName = "UserResource")
-@Interceptors({EntityManagerAwareInterceptor.class})
-public class UserResource extends AbstractResource<User> {
+public class UserResource {
 
-    @Override
-    public Class<User> getEntityClass() {
-        return User.class;
+    @POST
+    public void create(User user) throws Exception {
+        user.create();
     }
 
-    @GET
-    @Path("/findTest/{id}")
-    public User findTest(@PathParam("id") Integer id) throws Exception {
-        User user = BuildModel();
-        user.setId(id);
-        user.find();
-        System.out.println("user = " + user);
-
-        user.setUsername("guest" + (new Random().nextDouble()));
+    @PUT
+    public void update(User user) throws Exception {
         user.update();
-        System.out.println("user = " + user);
+    }
 
-        return user;
+    @DELETE
+    public void delete(User user) throws Exception {
+        user.delete();
     }
 
     @GET
-    @Path("/testNewModel/{id}")
-    public User testNewModel(@PathParam("id") Integer id) throws Exception {
+    @Path("/{id}")
+    public User find(@PathParam("id") Integer id) throws Exception {
+        User model = new User();
+        model.setId(id);
+        model.find();
+        return model;
+    }
+
+    @GET
+    @Path("/")
+    public List<User> findAll() throws Exception {
+        return new User().findAll();
+    }
+
+    @GET
+    @Path("/login/{username}/{password}")
+    public User login(@PathParam("username") String username, @PathParam("password") String password) throws Exception {
         User user = new User();
-        user.setEntityManager(getEntityManager());
-        user.setId(id);
-        user.find();
-        System.out.println("user = " + user);
-
-        user.setUsername("acm");
-        user.update();
-        System.out.println("user = " + user);
-
+        user.setUsername(username);
+        user.setPassword(password);
+        user.login();
         return user;
     }
 
